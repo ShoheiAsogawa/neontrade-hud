@@ -18,7 +18,7 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "recharts": "^2.10.3",
+    "recharts": "^3.6.0",
     "lucide-react": "^0.294.0",
     "@supabase/supabase-js": "^2.38.5",
     "@aws-sdk/client-s3": "^3.490.0",
