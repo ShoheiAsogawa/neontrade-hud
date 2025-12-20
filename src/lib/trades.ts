@@ -20,14 +20,10 @@ export async function fetchTrades(userId: string): Promise<Trade[]> {
       id: row.id,
       symbol: row.symbol,
       side: row.side,
-      entryPrice: row.entry_price ?? undefined,
-      exitPrice: row.exit_price ?? undefined,
-      quantity: row.quantity ?? undefined,
       pnl: row.pnl,
       date: row.date,
       time: row.time,
       logic: row.logic,
-      timeframe: row.timeframe,
       strategy: row.strategy,
       mood: row.mood,
       imageUrl: row.image_url ?? undefined,
@@ -50,14 +46,14 @@ export async function createTrade(userId: string, trade: Omit<Trade, 'id'>): Pro
         user_id: userId,
         symbol: trade.symbol,
         side: trade.side,
-        entry_price: trade.entryPrice ?? null,
-        exit_price: trade.exitPrice ?? null,
-        quantity: trade.quantity ?? null,
+        entry_price: null,
+        exit_price: null,
+        quantity: null,
         pnl: trade.pnl,
         date: trade.date,
         time: trade.time,
         logic: trade.logic,
-        timeframe: trade.timeframe,
+        timeframe: '', // 使用しないが、データベーススキーマに存在するため空文字を設定
         strategy: trade.strategy,
         mood: trade.mood,
         image_url: trade.imageUrl ?? null,
@@ -100,14 +96,10 @@ export async function updateTrade(userId: string, tradeId: string, updates: Part
     
     if (updates.symbol !== undefined) updateData.symbol = updates.symbol
     if (updates.side !== undefined) updateData.side = updates.side
-    if (updates.entryPrice !== undefined) updateData.entry_price = updates.entryPrice
-    if (updates.exitPrice !== undefined) updateData.exit_price = updates.exitPrice
-    if (updates.quantity !== undefined) updateData.quantity = updates.quantity
     if (updates.pnl !== undefined) updateData.pnl = updates.pnl
     if (updates.date !== undefined) updateData.date = updates.date
     if (updates.time !== undefined) updateData.time = updates.time
     if (updates.logic !== undefined) updateData.logic = updates.logic
-    if (updates.timeframe !== undefined) updateData.timeframe = updates.timeframe
     if (updates.strategy !== undefined) updateData.strategy = updates.strategy
     if (updates.mood !== undefined) updateData.mood = updates.mood
     if (updates.imageUrl !== undefined) updateData.image_url = updates.imageUrl

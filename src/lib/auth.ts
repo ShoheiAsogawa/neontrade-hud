@@ -16,7 +16,8 @@ export async function getCurrentUserId(): Promise<string> {
     let userId = localStorage.getItem('neon_trade_user_id')
     
     if (!userId) {
-      // 新しいユーザーIDを生成
+      // 新しいユーザーIDを生成（UUID形式ではなく、シンプルな文字列）
+      // データベースのuser_idカラムはTEXT型なので、任意の文字列を使用可能
       userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
       localStorage.setItem('neon_trade_user_id', userId)
     }

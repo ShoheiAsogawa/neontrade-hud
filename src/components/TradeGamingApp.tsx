@@ -7,7 +7,8 @@ import {
   TrendingUp, Plus, Image as ImageIcon, 
   Calendar, DollarSign, Activity, Save, X, Filter,
   Search, Crosshair, History, LayoutDashboard,
-  Clock, Target, Smile, BarChart2, PieChart as PieIcon, AlertTriangle, Globe, CalendarDays, Loader2
+  Target, Smile, BarChart2, PieChart as PieIcon, AlertTriangle, Globe, CalendarDays, Loader2,
+  Sparkles, Trophy, Zap, Flame, Star, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { fetchTrades, createTrade } from '../lib/trades';
 import { uploadImageToS3 } from '../lib/s3';
@@ -19,14 +20,10 @@ export interface Trade {
   id: string;
   symbol: string; 
   side: 'LONG' | 'SHORT';
-  entryPrice?: number;
-  exitPrice?: number;
-  quantity?: number;
   pnl: number;
   date: string;
   time: string; // HH:mm format
   logic: string;
-  timeframe: string;
   strategy: string;
   mood: string;
   imageUrl?: string;
@@ -35,17 +32,7 @@ export interface Trade {
 
 // --- Constants & Options (Japanese Main) ---
 
-const SYMBOL_OPTIONS = ['BTC/USD', 'ETH/USD', 'XAU/USD', 'Other'];
-
-const TIMEFRAME_DEF = [
-  { val: '1m', jp: '1分足', en: '1 MIN' },
-  { val: '5m', jp: '5分足', en: '5 MIN' },
-  { val: '15m', jp: '15分足', en: '15 MIN' },
-  { val: '1H', jp: '1時間足', en: '1 HOUR' },
-  { val: '4H', jp: '4時間足', en: '4 HOUR' },
-  { val: 'Daily', jp: '日足', en: 'DAILY' },
-  { val: 'Weekly', jp: '週足', en: 'WEEKLY' },
-];
+const SYMBOL_OPTIONS = ['BTC/USD', 'ETH/USD', 'XAU/USD', 'USD/JPY', 'EUR/USD', 'GBP/USD', 'AUD/USD', 'Other'];
 
 const STRATEGY_DEF = [
   { val: 'Trend Follow', jp: '順張り', en: 'TREND FOLLOW' },
@@ -85,13 +72,13 @@ const generateMockTrades = (): Trade[] => {
   const prevYear = month === 1 ? year - 1 : year;
 
   return [
-    { id: '1', symbol: 'BTC/USD', side: 'LONG', pnl: 750, date: `${year}-${pad(month)}-01`, time: '10:30', logic: 'サポートライン反発、RSIダイバージェンス確認。', status: 'WIN', timeframe: '4時間足', strategy: '逆張り', mood: '冷静', imageUrl: 'https://images.unsplash.com/photo-1611974765270-ca1258634369?auto=format&fit=crop&q=80&w=1000' },
-    { id: '2', symbol: 'ETH/USD', side: 'SHORT', pnl: -250, date: `${year}-${pad(month)}-03`, time: '16:15', logic: '高値更新失敗と見てエントリーしたが、踏み上げられた。損切り遅れ。', status: 'LOSS', timeframe: '15分足', strategy: 'ブレイクアウト', mood: '不安' },
-    { id: '3', symbol: 'USD/JPY', side: 'LONG', pnl: 700, date: `${year}-${pad(month)}-05`, time: '09:00', logic: '日銀決定会合後の押し目買い。', status: 'WIN', timeframe: '1時間足', strategy: '順張り', mood: '冷静' },
-    { id: '4', symbol: 'XAU/USD', side: 'SHORT', pnl: 200, date: `${year}-${pad(month)}-08`, time: '22:00', logic: 'ダブルトップ形成。ネックライン割れでエントリー。', status: 'WIN', timeframe: '4時間足', strategy: 'レンジ', mood: '普通' },
-    { id: '5', symbol: 'NASDAQ', side: 'LONG', pnl: -100, date: `${year}-${pad(month)}-12`, time: '23:30', logic: '雇用統計発表での乱高下に巻き込まれる。', status: 'LOSS', timeframe: '5分足', strategy: 'スキャルピング', mood: '飛び乗り (FOMO)' },
-    { id: '6', symbol: 'BTC/USD', side: 'SHORT', pnl: -150, date: `${prevYear}-${pad(prevMonth)}-15`, time: '14:00', logic: '抵抗帯での戻り売り失敗。', status: 'LOSS', timeframe: '1時間足', strategy: '順張り', mood: '普通' },
-    { id: '7', symbol: 'ETH/USD', side: 'LONG', pnl: 450, date: `${year}-${pad(month)}-15`, time: '17:30', logic: 'トレンド転換初動。', status: 'WIN', timeframe: '1時間足', strategy: '順張り', mood: '自信あり' },
+    { id: '1', symbol: 'BTC/USD', side: 'LONG', pnl: 750, date: `${year}-${pad(month)}-01`, time: '10:30', logic: 'サポートライン反発、RSIダイバージェンス確認。', status: 'WIN', strategy: '逆張り', mood: '冷静', imageUrl: 'https://images.unsplash.com/photo-1611974765270-ca1258634369?auto=format&fit=crop&q=80&w=1000' },
+    { id: '2', symbol: 'ETH/USD', side: 'SHORT', pnl: -250, date: `${year}-${pad(month)}-03`, time: '16:15', logic: '高値更新失敗と見てエントリーしたが、踏み上げられた。損切り遅れ。', status: 'LOSS', strategy: 'ブレイクアウト', mood: '不安' },
+    { id: '3', symbol: 'USD/JPY', side: 'LONG', pnl: 700, date: `${year}-${pad(month)}-05`, time: '09:00', logic: '日銀決定会合後の押し目買い。', status: 'WIN', strategy: '順張り', mood: '冷静' },
+    { id: '4', symbol: 'XAU/USD', side: 'SHORT', pnl: 200, date: `${year}-${pad(month)}-08`, time: '22:00', logic: 'ダブルトップ形成。ネックライン割れでエントリー。', status: 'WIN', strategy: 'レンジ', mood: '普通' },
+    { id: '5', symbol: 'NASDAQ', side: 'LONG', pnl: -100, date: `${year}-${pad(month)}-12`, time: '23:30', logic: '雇用統計発表での乱高下に巻き込まれる。', status: 'LOSS', strategy: 'スキャルピング', mood: '飛び乗り (FOMO)' },
+    { id: '6', symbol: 'BTC/USD', side: 'SHORT', pnl: -150, date: `${prevYear}-${pad(prevMonth)}-15`, time: '14:00', logic: '抵抗帯での戻り売り失敗。', status: 'LOSS', strategy: '順張り', mood: '普通' },
+    { id: '7', symbol: 'ETH/USD', side: 'LONG', pnl: 450, date: `${year}-${pad(month)}-15`, time: '17:30', logic: 'トレンド転換初動。', status: 'WIN', strategy: '順張り', mood: '自信あり' },
   ];
 };
 
@@ -140,7 +127,8 @@ const SectionHeader = ({ icon: Icon, jp, en }: { icon: any, jp: string, en: stri
 
 export default function TradeGamingApp() {
   const [trades, setTrades] = useState<Trade[]>([]);
-  const [view, setView] = useState<'dashboard' | 'journal' | 'add'>('dashboard');
+  const [view, setView] = useState<'dashboard' | 'journal' | 'add' | 'calendar'>('dashboard');
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [dashboardPeriod, setDashboardPeriod] = useState<'ALL' | 'YEAR' | 'MONTH'>('ALL');
   const [isMobile, setIsMobile] = useState(false);
   const [exchangeRate, setExchangeRate] = useState(150);
@@ -395,14 +383,10 @@ export default function TradeGamingApp() {
       symbol: 'BTC/USD',
       customSymbol: '',
       side: 'LONG',
-      entryPrice: '',
-      exitPrice: '',
-      quantity: '',
       pnl: '', 
       date: new Date().toISOString().split('T')[0],
       time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
       logic: '',
-      timeframe: '1時間足',
       strategy: '順張り',
       mood: '冷静',
     });
@@ -410,6 +394,8 @@ export default function TradeGamingApp() {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [submitting, setSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [successPnl, setSuccessPnl] = useState<number>(0);
 
     const handleInputChange = (e: any) => {
       const { name, value } = e.target;
@@ -458,14 +444,10 @@ export default function TradeGamingApp() {
         const newTrade = await createTrade(userId, {
           symbol: finalSymbol,
           side: formData.side as 'LONG' | 'SHORT',
-          entryPrice: formData.entryPrice ? parseFloat(formData.entryPrice) : undefined,
-          exitPrice: formData.exitPrice ? parseFloat(formData.exitPrice) : undefined,
-          quantity: formData.quantity ? parseFloat(formData.quantity) : undefined,
           pnl: pnlVal,
           date: formData.date,
           time: formData.time,
           logic: formData.logic,
-          timeframe: formData.timeframe,
           strategy: formData.strategy,
           mood: formData.mood,
           imageUrl: imageUrl,
@@ -474,21 +456,26 @@ export default function TradeGamingApp() {
 
         // ローカル状態を更新
         setTrades([newTrade, ...trades]);
-        setView('journal');
+        
+        // 成功アニメーションを表示
+        setSuccessPnl(pnlVal);
+        setShowSuccess(true);
+        
+        // 2秒後にジャーナルに遷移
+        setTimeout(() => {
+          setView('journal');
+          setShowSuccess(false);
+        }, 2000);
         
         // フォームをリセット
         setFormData({
           symbol: 'BTC/USD',
           customSymbol: '',
           side: 'LONG',
-          entryPrice: '',
-          exitPrice: '',
-          quantity: '',
           pnl: '',
           date: new Date().toISOString().split('T')[0],
           time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
           logic: '',
-          timeframe: '1時間足',
           strategy: '順張り',
           mood: '冷静',
         });
@@ -543,47 +530,56 @@ export default function TradeGamingApp() {
             </div>
           </div>
 
-          <Card className="p-4 bg-slate-800/50">
-            <div className="space-y-2">
+          <Card className="p-4 bg-gradient-to-br from-emerald-900/30 to-slate-800/50 border-emerald-500/50 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-transparent to-emerald-500/10 animate-pulse"></div>
+            <div className="space-y-2 relative z-10">
               <div className="flex items-center gap-2 mb-2">
-                 <DollarSign size={16} className="text-emerald-400"/>
-                 <DualText jp="確定損益 (手動入力)" en="REALIZED PnL" className="text-emerald-400" />
+                 <DollarSign size={18} className="text-emerald-400 animate-bounce"/>
+                 <DualText jp="確定損益" en="REALIZED PnL" className="text-emerald-400" />
               </div>
-              <input type="number" step="any" required name="pnl" value={formData.pnl} onChange={handleInputChange} placeholder="Example: 500 or -200" className="w-full bg-slate-950 border border-emerald-500/50 rounded p-4 text-xl font-bold text-white focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 placeholder:text-slate-600" />
+              <input 
+                type="number" 
+                step="any" 
+                required 
+                name="pnl" 
+                value={formData.pnl} 
+                onChange={(e) => {
+                  handleInputChange(e);
+                  // リアルタイムで色を変更
+                  const val = parseFloat(e.target.value);
+                  if (val > 0) {
+                    e.target.className = e.target.className.replace(/border-\w+-\d+\/50/g, 'border-emerald-500/50');
+                  } else if (val < 0) {
+                    e.target.className = e.target.className.replace(/border-\w+-\d+\/50/g, 'border-rose-500/50');
+                  }
+                }}
+                placeholder="例: 500 または -200" 
+                className="w-full bg-slate-950 border-2 border-emerald-500/50 rounded-lg p-4 text-2xl font-black text-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/50 placeholder:text-slate-600 transition-all duration-300" 
+              />
+              {formData.pnl && (
+                <div className={`text-sm font-bold mt-1 ${parseFloat(formData.pnl) > 0 ? 'text-emerald-400' : parseFloat(formData.pnl) < 0 ? 'text-rose-400' : 'text-slate-400'}`}>
+                  {parseFloat(formData.pnl) > 0 ? '💰 利益確定！' : parseFloat(formData.pnl) < 0 ? '⚠️ 損失' : ''}
+                </div>
+              )}
             </div>
           </Card>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <DualText jp="エントリー価格" en="ENTRY (Optional)" />
-              <input type="number" step="any" name="entryPrice" value={formData.entryPrice} onChange={handleInputChange} placeholder="0.00" className="w-full bg-slate-950 border border-slate-700 rounded p-3 text-white focus:border-cyan-500 placeholder:text-slate-600" />
-            </div>
-            <div className="space-y-2">
-              <DualText jp="決済価格" en="EXIT (Optional)" />
-              <input type="number" step="any" name="exitPrice" value={formData.exitPrice} onChange={handleInputChange} placeholder="0.00" className="w-full bg-slate-950 border border-slate-700 rounded p-3 text-white focus:border-cyan-500 placeholder:text-slate-600" />
-            </div>
-             <div className="space-y-2">
-              <DualText jp="数量" en="QTY (Optional)" />
-              <input type="number" step="any" name="quantity" value={formData.quantity} onChange={handleInputChange} placeholder="1" className="w-full bg-slate-950 border border-slate-700 rounded p-3 text-white focus:border-cyan-500 placeholder:text-slate-600" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-               <div className="flex items-center gap-2"><Clock size={14} className="text-cyan-500"/><DualText jp="時間足" en="TIMEFRAME" /></div>
-               <select name="timeframe" value={formData.timeframe} onChange={handleInputChange} className="w-full bg-slate-950 border border-slate-700 rounded p-3 text-white focus:border-cyan-500">
-                 {TIMEFRAME_DEF.map(opt => <option key={opt.val} value={opt.jp}>{opt.jp} ({opt.en})</option>)}
-               </select>
-            </div>
-            <div className="space-y-2">
-               <div className="flex items-center gap-2"><Target size={14} className="text-violet-500"/><DualText jp="戦略" en="STRATEGY" /></div>
-               <select name="strategy" value={formData.strategy} onChange={handleInputChange} className="w-full bg-slate-950 border border-slate-700 rounded p-3 text-white focus:border-cyan-500">
+               <div className="flex items-center gap-2">
+                 <Target size={16} className="text-violet-500 animate-pulse"/>
+                 <DualText jp="戦略" en="STRATEGY" />
+               </div>
+               <select name="strategy" value={formData.strategy} onChange={handleInputChange} className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/50 transition-all">
                  {STRATEGY_DEF.map(opt => <option key={opt.val} value={opt.jp}>{opt.jp} ({opt.en})</option>)}
                </select>
             </div>
             <div className="space-y-2">
-               <div className="flex items-center gap-2"><Smile size={14} className="text-yellow-500"/><DualText jp="メンタル" en="MOOD" /></div>
-               <select name="mood" value={formData.mood} onChange={handleInputChange} className="w-full bg-slate-950 border border-slate-700 rounded p-3 text-white focus:border-cyan-500">
+               <div className="flex items-center gap-2">
+                 <Smile size={16} className="text-yellow-500 animate-pulse"/>
+                 <DualText jp="メンタル" en="MOOD" />
+               </div>
+               <select name="mood" value={formData.mood} onChange={handleInputChange} className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/50 transition-all">
                  {MOOD_DEF.map(opt => <option key={opt.val} value={opt.jp}>{opt.jp} ({opt.en})</option>)}
                </select>
             </div>
@@ -610,29 +606,175 @@ export default function TradeGamingApp() {
           </div>
 
           {submitError && (
-            <div className="bg-rose-900/50 border border-rose-700 rounded-lg p-3 text-rose-300 text-sm">
+            <div className="bg-rose-900/50 border border-rose-700 rounded-lg p-3 text-rose-300 text-sm animate-shake">
               {submitError}
             </div>
           )}
           
           <NeonButton 
             type="submit" 
-            className="w-full py-4 text-lg" 
+            className="w-full py-4 text-lg relative overflow-hidden group" 
             icon={submitting ? Loader2 : Save}
             disabled={submitting}
           >
-             <span className="flex flex-col leading-none items-center">
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-400/50 to-cyan-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+             <span className="flex flex-col leading-none items-center relative z-10">
                <span>{submitting ? '保存中...' : '保存'}</span>
                <span className="text-[10px] opacity-70 mt-1">{submitting ? 'SAVING...' : 'SAVE TRADE'}</span>
              </span>
           </NeonButton>
         </form>
+
+        {/* 成功アニメーション */}
+        {showSuccess && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+            <div className="relative">
+              {/* パーティクルエフェクト */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                {[...Array(20)].map((_, i) => (
+                  <div
+                    key={i}
+                    className={`absolute w-2 h-2 rounded-full ${
+                      successPnl > 0 ? 'bg-emerald-400' : 'bg-rose-400'
+                    } animate-ping`}
+                    style={{
+                      left: `${50 + Math.cos((i * 360) / 20) * 100}%`,
+                      top: `${50 + Math.sin((i * 360) / 20) * 100}%`,
+                      animationDelay: `${i * 0.1}s`,
+                      animationDuration: '1s'
+                    }}
+                  />
+                ))}
+              </div>
+              
+              {/* メインコンテンツ */}
+              <div className={`relative bg-gradient-to-br ${
+                successPnl > 0 
+                  ? 'from-emerald-900/90 to-emerald-800/90 border-emerald-500' 
+                  : successPnl < 0
+                  ? 'from-rose-900/90 to-rose-800/90 border-rose-500'
+                  : 'from-slate-900/90 to-slate-800/90 border-slate-500'
+              } border-2 rounded-2xl p-8 shadow-2xl transform scale-0 animate-in zoom-in duration-500`}>
+                <div className="text-center">
+                  {successPnl > 0 ? (
+                    <>
+                      <div className="mb-4 animate-bounce">
+                        <Trophy className="w-20 h-20 text-yellow-400 mx-auto drop-shadow-[0_0_20px_rgba(250,204,21,0.8)]" />
+                      </div>
+                      <h2 className="text-4xl font-black text-emerald-400 mb-2 animate-pulse">
+                        WIN! 🎉
+                      </h2>
+                      <p className="text-2xl font-bold text-white mb-4">
+                        +{successPnl.toLocaleString()} USD
+                      </p>
+                      <div className="flex items-center justify-center gap-2 text-emerald-300">
+                        <Sparkles className="animate-spin" size={20} />
+                        <span className="text-sm">素晴らしいトレード！</span>
+                        <Sparkles className="animate-spin" size={20} />
+                      </div>
+                    </>
+                  ) : successPnl < 0 ? (
+                    <>
+                      <div className="mb-4">
+                        <AlertTriangle className="w-20 h-20 text-rose-400 mx-auto animate-pulse" />
+                      </div>
+                      <h2 className="text-4xl font-black text-rose-400 mb-2">
+                        LOSS
+                      </h2>
+                      <p className="text-2xl font-bold text-white mb-4">
+                        {successPnl.toLocaleString()} USD
+                      </p>
+                      <p className="text-sm text-rose-300">
+                        次は頑張ろう！
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="mb-4">
+                        <Zap className="w-20 h-20 text-slate-400 mx-auto" />
+                      </div>
+                      <h2 className="text-4xl font-black text-slate-400 mb-2">
+                        BE
+                      </h2>
+                      <p className="text-sm text-slate-300">
+                        損益なし
+                      </p>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
 
-  const Dashboard = () => (
+  const Dashboard = () => {
+    // モチベーション要素の計算
+    const winStreak = stats.currentStreak > 0 ? stats.currentStreak : 0;
+    const totalWins = stats.wins;
+    const milestone = totalWins >= 10 && totalWins < 50 ? 10 : totalWins >= 50 && totalWins < 100 ? 50 : totalWins >= 100 ? 100 : 0;
+    
+    return (
     <div className="space-y-6 animate-in fade-in duration-500">
+      
+      {/* モチベーションセクション */}
+      {winStreak >= 3 && (
+        <Card className="p-6 bg-gradient-to-r from-emerald-900/50 via-yellow-900/30 to-emerald-900/50 border-2 border-emerald-500/50 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-400/20 to-transparent animate-pulse"></div>
+          <div className="relative z-10 flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <Flame className="w-12 h-12 text-yellow-400 animate-bounce" />
+                <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-yellow-300 animate-spin" />
+              </div>
+              <div>
+                <div className="text-3xl font-black text-emerald-400 mb-1 animate-pulse">
+                  🔥 {winStreak}連勝中！
+                </div>
+                <div className="text-sm text-slate-300">
+                  素晴らしいパフォーマンス！この調子で続けよう！
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Trophy className="w-8 h-8 text-yellow-400 animate-float" />
+              <span className="text-2xl font-black text-yellow-400">{winStreak}</span>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {milestone > 0 && (
+        <Card className="p-4 bg-gradient-to-r from-cyan-900/50 to-violet-900/50 border-2 border-cyan-500/50">
+          <div className="flex items-center gap-3">
+            <Star className="w-10 h-10 text-yellow-400 animate-spin" />
+            <div>
+              <div className="text-lg font-black text-cyan-400">
+                🎉 達成！{milestone}勝達成！
+              </div>
+              <div className="text-xs text-slate-300">
+                次の目標: {milestone === 10 ? '50勝' : milestone === 50 ? '100勝' : '200勝'}を目指そう！
+              </div>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {stats.totalPnL > 0 && (
+        <Card className="p-4 bg-gradient-to-r from-emerald-900/30 to-cyan-900/30 border border-emerald-500/30">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Zap className="w-6 h-6 text-yellow-400 animate-pulse" />
+              <span className="text-sm text-slate-300">累計利益</span>
+            </div>
+            <span className="text-xl font-black text-emerald-400 animate-glow">
+              +{stats.totalPnL.toLocaleString()} USD
+            </span>
+          </div>
+        </Card>
+      )}
       
       {/* --- Filter Controls --- */}
       <div className="flex justify-end gap-2">
@@ -656,11 +798,19 @@ export default function TradeGamingApp() {
       {/* 1. TOP STATS ROW */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
         {/* Net Profit */}
-        <Card className="p-3 col-span-2 relative overflow-hidden group border-l-4 border-l-cyan-500">
-          <DualText jp="純利益" en="NET PROFIT" className="text-slate-300" />
-          <div className="mt-2">
+        <Card className={`p-3 col-span-2 relative overflow-hidden group border-l-4 ${
+          stats.totalPnL > 0 ? 'border-l-emerald-500' : 'border-l-cyan-500'
+        }`}>
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-transparent to-cyan-500/10 animate-pulse"></div>
+          <DualText jp="純利益" en="NET PROFIT" className="text-slate-300 relative z-10" />
+          <div className="mt-2 relative z-10">
              {formatMoney(stats.totalPnL, true)}
           </div>
+          {stats.totalPnL > 1000 && (
+            <div className="absolute top-2 right-2">
+              <Trophy className="w-6 h-6 text-yellow-400 animate-float" />
+            </div>
+          )}
         </Card>
 
         {/* Win Rate */}
@@ -688,11 +838,20 @@ export default function TradeGamingApp() {
         </Card>
 
         {/* Streak */}
-        <Card className="p-3 relative overflow-hidden border-l-4 border-l-emerald-500">
+        <Card className={`p-3 relative overflow-hidden border-l-4 ${
+          stats.currentStreak >= 3 ? 'border-l-yellow-500 bg-gradient-to-r from-yellow-900/20 to-transparent' : 
+          stats.currentStreak >= 0 ? 'border-l-emerald-500' : 'border-l-rose-500'
+        }`}>
           <DualText jp="現在の連勝/連敗" en="CURRENT STREAK" className="text-slate-300" />
-          <span className={`text-2xl font-black mt-1 block ${stats.currentStreak >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-            {stats.currentStreak >= 0 ? `+${stats.currentStreak} WIN` : `${stats.currentStreak} LOSS`}
-          </span>
+          <div className="flex items-center gap-2 mt-1">
+            {stats.currentStreak >= 3 && <Flame className="w-5 h-5 text-yellow-400 animate-pulse" />}
+            <span className={`text-2xl font-black block ${
+              stats.currentStreak >= 3 ? 'text-yellow-400 animate-pulse' :
+              stats.currentStreak >= 0 ? 'text-emerald-400' : 'text-rose-400'
+            }`}>
+              {stats.currentStreak >= 0 ? `+${stats.currentStreak} WIN` : `${stats.currentStreak} LOSS`}
+            </span>
+          </div>
         </Card>
       </div>
 
@@ -810,7 +969,7 @@ export default function TradeGamingApp() {
           </Card>
 
           <Card className="p-4">
-             <SectionHeader icon={Clock} jp="時間帯別勝率 (0:00 - 23:00)" en="HOURLY WIN RATE" />
+             <SectionHeader icon={Activity} jp="時間帯別勝率 (0:00 - 23:00)" en="HOURLY WIN RATE" />
              <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
                    <AreaChart data={hourlyData}>
@@ -862,7 +1021,8 @@ export default function TradeGamingApp() {
         </Card>
       </div>
     </div>
-  );
+    );
+  };
 
   const Journal = () => {
     // Search & Filter State
@@ -958,10 +1118,20 @@ export default function TradeGamingApp() {
                             {trade.side}
                           </span>
                         </div>
-                        <div className="flex gap-2 mt-1">
-                          <span className="text-xs text-slate-400 border border-slate-800 px-1 rounded bg-slate-900">{trade.timeframe}</span>
-                          <span className="text-xs text-slate-400 border border-slate-800 px-1 rounded bg-slate-900">{trade.strategy}</span>
-                          <span className="text-xs text-slate-400 border border-slate-800 px-1 rounded bg-slate-900">{trade.mood}</span>
+                        <div className="flex gap-2 mt-1 flex-wrap">
+                          <span className="text-xs text-slate-400 border border-slate-800 px-2 py-0.5 rounded bg-slate-900">{trade.strategy}</span>
+                          <span className="text-xs text-slate-400 border border-slate-800 px-2 py-0.5 rounded bg-slate-900">{trade.mood}</span>
+                          {trade.pnl > 0 && (
+                            <span className="text-xs text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded bg-emerald-900/30 animate-pulse">
+                              <Trophy size={12} className="inline mr-1" />
+                              WIN
+                            </span>
+                          )}
+                          {trade.pnl < 0 && (
+                            <span className="text-xs text-rose-400 border border-rose-800 px-2 py-0.5 rounded bg-rose-900/30">
+                              LOSS
+                            </span>
+                          )}
                         </div>
                       </div>
                       <div className="text-right">
@@ -997,6 +1167,296 @@ export default function TradeGamingApp() {
     );
   };
 
+  const CalendarView = () => {
+    const [currentMonth, setCurrentMonth] = useState(new Date());
+    const [selectedDayTrades, setSelectedDayTrades] = useState<Trade[]>([]);
+
+    // 日別損益データの集計
+    const dailyPnL = useMemo(() => {
+      const dailyData: Record<string, number> = {};
+      trades.forEach(trade => {
+        const dateKey = trade.date;
+        if (!dailyData[dateKey]) {
+          dailyData[dateKey] = 0;
+        }
+        dailyData[dateKey] += trade.pnl;
+      });
+      return dailyData;
+    }, [trades]);
+
+    // カレンダーの日付を生成
+    const calendarDays = useMemo(() => {
+      const year = currentMonth.getFullYear();
+      const month = currentMonth.getMonth();
+      
+      // 月の最初の日と最後の日
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      
+      // 最初の日の曜日（0=日曜日）
+      const startDayOfWeek = firstDay.getDay();
+      
+      // カレンダーに表示する日付の配列
+      const days: Array<{ date: Date; isCurrentMonth: boolean; pnl: number | null; tradeCount: number }> = [];
+      
+      // 前月の日付を追加
+      const prevMonthLastDay = new Date(year, month, 0).getDate();
+      for (let i = startDayOfWeek - 1; i >= 0; i--) {
+        const date = new Date(year, month - 1, prevMonthLastDay - i);
+        const dateKey = date.toISOString().split('T')[0];
+        days.push({
+          date,
+          isCurrentMonth: false,
+          pnl: dailyPnL[dateKey] ?? null,
+          tradeCount: trades.filter(t => t.date === dateKey).length
+        });
+      }
+      
+      // 今月の日付を追加
+      for (let day = 1; day <= lastDay.getDate(); day++) {
+        const date = new Date(year, month, day);
+        const dateKey = date.toISOString().split('T')[0];
+        days.push({
+          date,
+          isCurrentMonth: true,
+          pnl: dailyPnL[dateKey] ?? null,
+          tradeCount: trades.filter(t => t.date === dateKey).length
+        });
+      }
+      
+      // 次月の日付を追加（カレンダーを埋めるため）
+      const remainingDays = 42 - days.length; // 6週間分
+      for (let day = 1; day <= remainingDays; day++) {
+        const date = new Date(year, month + 1, day);
+        const dateKey = date.toISOString().split('T')[0];
+        days.push({
+          date,
+          isCurrentMonth: false,
+          pnl: dailyPnL[dateKey] ?? null,
+          tradeCount: trades.filter(t => t.date === dateKey).length
+        });
+      }
+      
+      return days;
+    }, [currentMonth, dailyPnL, trades]);
+
+    const handleDayClick = (date: Date) => {
+      const dateKey = date.toISOString().split('T')[0];
+      const dayTrades = trades.filter(t => t.date === dateKey);
+      setSelectedDayTrades(dayTrades);
+      setSelectedDate(dateKey);
+    };
+
+    const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+    const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+
+    const prevMonth = () => {
+      setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
+      setSelectedDate(null);
+      setSelectedDayTrades([]);
+    };
+
+    const nextMonth = () => {
+      setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
+      setSelectedDate(null);
+      setSelectedDayTrades([]);
+    };
+
+    const goToToday = () => {
+      setCurrentMonth(new Date());
+      setSelectedDate(null);
+      setSelectedDayTrades([]);
+    };
+
+    return (
+      <div className="space-y-6 animate-in fade-in duration-500">
+        {/* カレンダーヘッダー */}
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={prevMonth}
+                className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-cyan-500 transition-colors"
+              >
+                <ChevronLeft className="w-5 h-5 text-cyan-400" />
+              </button>
+              <h2 className="text-2xl font-black text-white">
+                {currentMonth.getFullYear()}年{monthNames[currentMonth.getMonth()]}
+              </h2>
+              <button
+                onClick={nextMonth}
+                className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-cyan-500 transition-colors"
+              >
+                <ChevronRight className="w-5 h-5 text-cyan-400" />
+              </button>
+            </div>
+            <NeonButton onClick={goToToday} variant="ghost" className="text-sm">
+              今日に戻る
+            </NeonButton>
+          </div>
+
+          {/* カレンダーグリッド */}
+          <div className="grid grid-cols-7 gap-2">
+            {/* 曜日ヘッダー */}
+            {dayNames.map((day, index) => (
+              <div
+                key={day}
+                className={`text-center font-bold text-sm py-2 ${
+                  index === 0 ? 'text-rose-400' : index === 6 ? 'text-blue-400' : 'text-slate-400'
+                }`}
+              >
+                {day}
+              </div>
+            ))}
+
+            {/* 日付セル */}
+            {calendarDays.map((day, index) => {
+              const dateKey = day.date.toISOString().split('T')[0];
+              const isToday = dateKey === new Date().toISOString().split('T')[0];
+              const isSelected = selectedDate === dateKey;
+              const hasTrades = day.tradeCount > 0;
+              
+              return (
+                <button
+                  key={index}
+                  onClick={() => handleDayClick(day.date)}
+                  className={`
+                    relative p-2 rounded-lg border-2 transition-all duration-200
+                    ${!day.isCurrentMonth ? 'opacity-30' : ''}
+                    ${isToday ? 'border-cyan-500 bg-cyan-900/20 shadow-[0_0_15px_rgba(6,182,212,0.3)]' : 'border-slate-800 bg-slate-900/50'}
+                    ${isSelected ? 'border-cyan-400 bg-cyan-900/40 shadow-[0_0_20px_rgba(6,182,212,0.5)] scale-105' : 'hover:border-slate-600 hover:bg-slate-800/50'}
+                    ${hasTrades ? 'ring-2 ring-offset-2 ring-offset-[#050b14]' : ''}
+                    ${day.pnl !== null && day.pnl > 0 ? 'ring-emerald-500/50' : day.pnl !== null && day.pnl < 0 ? 'ring-rose-500/50' : 'ring-slate-600/50'}
+                  `}
+                >
+                  {/* 日付番号 */}
+                  <div className={`text-sm font-bold mb-1 ${
+                    isToday ? 'text-cyan-400' : day.isCurrentMonth ? 'text-white' : 'text-slate-600'
+                  }`}>
+                    {day.date.getDate()}
+                  </div>
+
+                  {/* 損益表示 */}
+                  {day.pnl !== null && (
+                    <div className={`text-xs font-black ${
+                      day.pnl > 0 
+                        ? 'text-emerald-400' 
+                        : day.pnl < 0 
+                        ? 'text-rose-400' 
+                        : 'text-slate-500'
+                    }`}>
+                      {day.pnl > 0 ? '+' : ''}{day.pnl.toLocaleString()}
+                    </div>
+                  )}
+
+                  {/* トレード数バッジ */}
+                  {hasTrades && (
+                    <div className="absolute top-1 right-1 w-4 h-4 rounded-full bg-cyan-500 flex items-center justify-center">
+                      <span className="text-[8px] font-black text-white">{day.tradeCount}</span>
+                    </div>
+                  )}
+
+                  {/* 今日のマーカー */}
+                  {isToday && (
+                    <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </Card>
+
+        {/* 選択した日のトレード一覧 */}
+        {selectedDate && (
+          <Card className="p-6 animate-in slide-in-from-bottom-4 duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <CalendarDays className="w-5 h-5 text-cyan-400" />
+                <h3 className="text-xl font-black text-white">
+                  {new Date(selectedDate).getMonth() + 1}月{new Date(selectedDate).getDate()}日のトレード
+                </h3>
+                {dailyPnL[selectedDate] !== undefined && (
+                  <span className={`text-lg font-black px-3 py-1 rounded ${
+                    dailyPnL[selectedDate]! > 0
+                      ? 'bg-emerald-900/50 text-emerald-400 border border-emerald-800'
+                      : dailyPnL[selectedDate]! < 0
+                      ? 'bg-rose-900/50 text-rose-400 border border-rose-800'
+                      : 'bg-slate-800 text-slate-400 border border-slate-700'
+                  }`}>
+                    {dailyPnL[selectedDate]! > 0 ? '+' : ''}{dailyPnL[selectedDate]!.toLocaleString()} USD
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={() => {
+                  setSelectedDate(null);
+                  setSelectedDayTrades([]);
+                }}
+                className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-rose-500 transition-colors"
+              >
+                <X className="w-4 h-4 text-slate-400" />
+              </button>
+            </div>
+
+            {selectedDayTrades.length === 0 ? (
+              <div className="text-center py-8 text-slate-500">
+                <Calendar className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                <p>この日のトレードはありません</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {selectedDayTrades.map((trade) => (
+                  <div
+                    key={trade.id}
+                    className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 hover:border-slate-700 transition-colors"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="font-black text-lg text-white">{trade.symbol}</span>
+                          <span className={`text-xs px-2 py-0.5 rounded font-bold ${
+                            trade.side === 'LONG' 
+                              ? 'bg-emerald-900/50 text-emerald-400 border border-emerald-800' 
+                              : 'bg-rose-900/50 text-rose-400 border border-rose-800'
+                          }`}>
+                            {trade.side}
+                          </span>
+                          <span className="text-xs text-slate-400 border border-slate-800 px-2 py-0.5 rounded bg-slate-900">
+                            {trade.strategy}
+                          </span>
+                        </div>
+                        <p className="text-sm text-slate-300 italic mb-2">
+                          <span className="text-cyan-500 font-bold not-italic mr-2">LOGIC:</span>
+                          {trade.logic}
+                        </p>
+                        <div className="text-xs text-slate-500">{trade.time}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className={`text-xl font-black ${
+                          trade.pnl > 0 ? 'text-emerald-400' : trade.pnl < 0 ? 'text-rose-400' : 'text-slate-400'
+                        }`}>
+                          {formatMoney(trade.pnl)}
+                        </div>
+                        {trade.pnl > 0 && (
+                          <Trophy className="w-4 h-4 text-yellow-400 mx-auto mt-1" />
+                        )}
+                      </div>
+                    </div>
+                    {trade.imageUrl && (
+                      <div className="mt-3 rounded-lg overflow-hidden border border-slate-800 h-32">
+                        <img src={trade.imageUrl} alt="Chart" className="w-full h-full object-cover opacity-70" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-[#050b14] text-white font-sans selection:bg-cyan-500/30">
       {/* Background Grid Effect */}
@@ -1022,6 +1482,9 @@ export default function TradeGamingApp() {
              </button>
              <button onClick={() => setView('journal')} className={`text-sm font-bold tracking-wider px-4 py-2 rounded hover:text-cyan-400 transition-colors ${view === 'journal' ? 'text-cyan-400 bg-cyan-900/20' : 'text-slate-400'}`}>
                 <DualText jp="履歴" en="HISTORY" />
+             </button>
+             <button onClick={() => setView('calendar')} className={`text-sm font-bold tracking-wider px-4 py-2 rounded hover:text-cyan-400 transition-colors ${view === 'calendar' ? 'text-cyan-400 bg-cyan-900/20' : 'text-slate-400'}`}>
+                <DualText jp="カレンダー" en="CALENDAR" />
              </button>
           </div>
         )}
@@ -1059,32 +1522,40 @@ export default function TradeGamingApp() {
             {view === 'dashboard' && <Dashboard />}
             {view === 'journal' && <Journal />}
             {view === 'add' && <AddTradeForm />}
+            {view === 'calendar' && <CalendarView />}
           </>
         )}
       </main>
 
       {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#050b14]/90 backdrop-blur-xl border-t border-slate-800 p-4 z-50 flex justify-around items-center">
-        <button onClick={() => setView('dashboard')} className={`flex flex-col items-center gap-1 ${view === 'dashboard' ? 'text-cyan-400' : 'text-slate-500'}`}>
-          <LayoutDashboard size={24} />
-          <span className="text-[9px] font-bold">分析</span>
-        </button>
-        
-        <div className="relative -top-6">
-           <button 
-             onClick={() => setView('add')}
-             className="w-14 h-14 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.6)] border-4 border-[#050b14] text-white"
-           >
-             <Plus size={28} />
-           </button>
-        </div>
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#050b14]/90 backdrop-blur-xl border-t border-slate-800 p-2 z-50">
+        <div className="flex justify-around items-center">
+          <button onClick={() => setView('dashboard')} className={`flex flex-col items-center gap-1 py-2 ${view === 'dashboard' ? 'text-cyan-400' : 'text-slate-500'}`}>
+            <LayoutDashboard size={20} />
+            <span className="text-[8px] font-bold">分析</span>
+          </button>
+          
+          <button onClick={() => setView('calendar')} className={`flex flex-col items-center gap-1 py-2 ${view === 'calendar' ? 'text-cyan-400' : 'text-slate-500'}`}>
+            <Calendar size={20} />
+            <span className="text-[8px] font-bold">カレンダー</span>
+          </button>
+          
+          <div className="relative -top-6">
+             <button 
+               onClick={() => setView('add')}
+               className="w-14 h-14 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.6)] border-4 border-[#050b14] text-white"
+             >
+               <Plus size={28} />
+             </button>
+          </div>
 
-        <button onClick={() => setView('journal')} className={`flex flex-col items-center gap-1 ${view === 'journal' ? 'text-cyan-400' : 'text-slate-500'}`}>
-          <History size={24} />
-          <span className="text-[9px] font-bold">履歴</span>
-        </button>
+          <button onClick={() => setView('journal')} className={`flex flex-col items-center gap-1 py-2 ${view === 'journal' ? 'text-cyan-400' : 'text-slate-500'}`}>
+            <History size={20} />
+            <span className="text-[8px] font-bold">履歴</span>
+          </button>
+        </div>
       </div>
     </div>
-  );
-}
+    );
+  };
 

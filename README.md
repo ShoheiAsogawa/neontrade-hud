@@ -158,7 +158,15 @@ npm run preview
 
 #### クイックスタート
 
-1. **Vercelを使用する場合（推奨）**
+1. **AWS Amplifyを使用する場合（推奨）**
+   - [AWS Amplify Console](https://console.aws.amazon.com/amplify/)にアクセス
+   - 「New app」→「Host web app」をクリック
+   - GitHubリポジトリを接続
+   - 環境変数を設定
+   - 「Save and deploy」をクリック
+   - 詳細は [AMPLIFY_SETUP.md](./AMPLIFY_SETUP.md) を参照
+
+2. **Vercelを使用する場合**
    ```bash
    # Vercel CLIをインストール
    npm i -g vercel
@@ -170,12 +178,12 @@ npm run preview
    vercel --prod
    ```
 
-2. **Netlifyを使用する場合**
+3. **Netlifyを使用する場合**
    - NetlifyダッシュボードからGitHubリポジトリをインポート
    - ビルド設定を自動検出
    - 環境変数を設定
 
-3. **GitHub Actionsのみ**
+4. **GitHub Actionsのみ**
    - `.github/workflows/deploy.yml`が自動的に実行されます
    - `main`ブランチにプッシュすると自動ビルド
 

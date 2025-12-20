@@ -6,9 +6,10 @@
 
 このプロジェクトは以下の方法で自動デプロイできます：
 
-1. **Vercel** - 推奨（最も簡単）
-2. **Netlify** - 代替オプション
-3. **GitHub Actions** - カスタムデプロイ
+1. **AWS Amplify** - 推奨（AWS統合、詳細は[AMPLIFY_SETUP.md](./AMPLIFY_SETUP.md)を参照）
+2. **Vercel** - 簡単なセットアップ
+3. **Netlify** - 代替オプション
+4. **GitHub Actions** - カスタムデプロイ
 
 ## 前提条件
 
@@ -16,7 +17,25 @@
 - Supabaseプロジェクトがセットアップされていること
 - AWS S3バケットが作成されていること
 
-## 方法1: Vercel（推奨）
+## 方法1: AWS Amplify（推奨）
+
+詳細な手順は [AMPLIFY_SETUP.md](./AMPLIFY_SETUP.md) を参照してください。
+
+### クイックスタート
+
+1. [AWS Amplify Console](https://console.aws.amazon.com/amplify/)にアクセス
+2. 「New app」→「Host web app」をクリック
+3. GitHubリポジトリを接続
+4. 環境変数を設定
+5. 「Save and deploy」をクリック
+
+**メリット:**
+- AWSサービスとの統合が容易
+- 自動SSL証明書
+- カスタムドメイン設定が簡単
+- ブランチごとのプレビューデプロイ
+
+## 方法2: Vercel
 
 ### 1. Vercelアカウントの作成
 
