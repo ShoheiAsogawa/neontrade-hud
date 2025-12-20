@@ -129,6 +129,10 @@ export default function TradeGamingApp() {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [view, setView] = useState<'dashboard' | 'journal' | 'add' | 'calendar'>('dashboard');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [calendarMonth, setCalendarMonth] = useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+  });
   const [dashboardPeriod, setDashboardPeriod] = useState<'ALL' | 'YEAR' | 'MONTH'>('ALL');
   const [isMobile, setIsMobile] = useState(false);
   const [exchangeRate, setExchangeRate] = useState(150);
@@ -1160,10 +1164,6 @@ export default function TradeGamingApp() {
   };
 
   const CalendarView = () => {
-    const [currentMonth, setCurrentMonth] = useState(() => {
-      const now = new Date();
-      return new Date(now.getFullYear(), now.getMonth(), 1);
-    });
     const [selectedDayTrades, setSelectedDayTrades] = useState<Trade[]>([]);
 
     // ローカル時間で日付文字列を生成する関数（YYYY-MM-DD形式）
@@ -1189,8 +1189,8 @@ export default function TradeGamingApp() {
 
     // カレンダーの日付を生成
     const calendarDays = useMemo(() => {
-      const year = currentMonth.getFullYear();
-      const month = currentMonth.getMonth();
+      const year = calendarMonth.getFullYear();
+      const month = calendarMonth.getMonth();
       
       // 月の最初の日と最後の日
       const firstDay = new Date(year, month, 1);
@@ -1241,7 +1241,7 @@ export default function TradeGamingApp() {
       }
       
       return days;
-    }, [currentMonth, dailyPnL, trades]);
+    }, [calendarMonth, dailyPnL, trades]);
 
     const handleDayClick = (date: Date) => {
       const dateKey = formatDateLocal(date);
@@ -1257,20 +1257,20 @@ export default function TradeGamingApp() {
     const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
 
     const prevMonth = () => {
-      setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
+      setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1, 1));
       setSelectedDate(null);
       setSelectedDayTrades([]);
     };
 
     const nextMonth = () => {
-      setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
+      setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1));
       setSelectedDate(null);
       setSelectedDayTrades([]);
     };
 
     const goToToday = () => {
       const now = new Date();
-      setCurrentMonth(new Date(now.getFullYear(), now.getMonth(), 1));
+      setCalendarMonth(new Date(now.getFullYear(), now.getMonth(), 1));
       setSelectedDate(null);
       setSelectedDayTrades([]);
     };
@@ -1288,7 +1288,7 @@ export default function TradeGamingApp() {
                 <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-cyan-400" />
               </button>
               <h2 className="text-lg md:text-2xl font-black text-white">
-                {currentMonth.getFullYear()}年{monthNames[currentMonth.getMonth()]}
+                {calendarMonth.getFullYear()}年{monthNames[calendarMonth.getMonth()]}
               </h2>
               <button
                 onClick={nextMonth}
