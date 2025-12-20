@@ -1243,11 +1243,16 @@ export default function TradeGamingApp() {
       return days;
     }, [currentMonth, dailyPnL, trades]);
 
-    const handleDayClick = (date: Date) => {
+    const handleDayClick = (date: Date, isCurrentMonth: boolean) => {
       const dateKey = formatDateLocal(date);
       const dayTrades = trades.filter(t => t.date === dateKey);
       setSelectedDayTrades(dayTrades);
       setSelectedDate(dateKey);
+      
+      // 前月または次月の日付をクリックした場合、その月に移動
+      if (!isCurrentMonth) {
+        setCurrentMonth(new Date(date.getFullYear(), date.getMonth(), 1));
+      }
     };
 
     const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
@@ -1275,37 +1280,38 @@ export default function TradeGamingApp() {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
         {/* カレンダーヘッダー */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
+        <Card className="p-3 md:p-6">
+          <div className="flex items-center justify-between mb-4 md:mb-6">
+            <div className="flex items-center gap-2 md:gap-4">
               <button
                 onClick={prevMonth}
-                className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-cyan-500 transition-colors"
+                className="p-1.5 md:p-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-cyan-500 transition-colors"
               >
-                <ChevronLeft className="w-5 h-5 text-cyan-400" />
+                <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-cyan-400" />
               </button>
-              <h2 className="text-2xl font-black text-white">
+              <h2 className="text-lg md:text-2xl font-black text-white">
                 {currentMonth.getFullYear()}年{monthNames[currentMonth.getMonth()]}
               </h2>
               <button
                 onClick={nextMonth}
-                className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-cyan-500 transition-colors"
+                className="p-1.5 md:p-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-cyan-500 transition-colors"
               >
-                <ChevronRight className="w-5 h-5 text-cyan-400" />
+                <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-cyan-400" />
               </button>
             </div>
-            <NeonButton onClick={goToToday} variant="ghost" className="text-sm">
-              今日に戻る
+            <NeonButton onClick={goToToday} variant="ghost" className="text-xs md:text-sm px-2 md:px-4 py-1 md:py-2">
+              <span className="hidden md:inline">今日に戻る</span>
+              <span className="md:hidden">今日</span>
             </NeonButton>
           </div>
 
           {/* カレンダーグリッド */}
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-1 md:gap-2">
             {/* 曜日ヘッダー */}
             {dayNames.map((day, index) => (
               <div
                 key={day}
-                className={`text-center font-bold text-sm py-2 ${
+                className={`text-center font-bold text-xs md:text-sm py-1 md:py-2 ${
                   index === 0 ? 'text-rose-400' : index === 6 ? 'text-blue-400' : 'text-slate-400'
                 }`}
               >
@@ -1324,18 +1330,18 @@ export default function TradeGamingApp() {
               return (
                 <button
                   key={index}
-                  onClick={() => handleDayClick(day.date)}
+                  onClick={() => handleDayClick(day.date, day.isCurrentMonth)}
                   className={`
-                    relative p-2 rounded-lg border-2 transition-all duration-200
+                    relative p-1 md:p-2 rounded md:rounded-lg border md:border-2 transition-all duration-200 min-h-[3rem] md:min-h-0
                     ${!day.isCurrentMonth ? 'opacity-30' : ''}
                     ${isToday ? 'border-cyan-500 bg-cyan-900/20 shadow-[0_0_15px_rgba(6,182,212,0.3)]' : 'border-slate-800 bg-slate-900/50'}
                     ${isSelected ? 'border-cyan-400 bg-cyan-900/40 shadow-[0_0_20px_rgba(6,182,212,0.5)] scale-105' : 'hover:border-slate-600 hover:bg-slate-800/50'}
-                    ${hasTrades ? 'ring-2 ring-offset-2 ring-offset-[#050b14]' : ''}
+                    ${hasTrades ? 'ring-1 md:ring-2 ring-offset-1 md:ring-offset-2 ring-offset-[#050b14]' : ''}
                     ${day.pnl !== null && day.pnl > 0 ? 'ring-emerald-500/50' : day.pnl !== null && day.pnl < 0 ? 'ring-rose-500/50' : 'ring-slate-600/50'}
                   `}
                 >
                   {/* 日付番号 */}
-                  <div className={`text-sm font-bold mb-1 ${
+                  <div className={`text-xs md:text-sm font-bold mb-0.5 md:mb-1 ${
                     isToday ? 'text-cyan-400' : day.isCurrentMonth ? 'text-white' : 'text-slate-600'
                   }`}>
                     {day.date.getDate()}
@@ -1343,7 +1349,7 @@ export default function TradeGamingApp() {
 
                   {/* 損益表示 */}
                   {day.pnl !== null && (
-                    <div className={`text-xs font-black ${
+                    <div className={`text-[10px] md:text-xs font-black leading-tight ${
                       day.pnl > 0 
                         ? 'text-emerald-400' 
                         : day.pnl < 0 
@@ -1356,14 +1362,14 @@ export default function TradeGamingApp() {
 
                   {/* トレード数バッジ */}
                   {hasTrades && (
-                    <div className="absolute top-1 right-1 w-4 h-4 rounded-full bg-cyan-500 flex items-center justify-center">
-                      <span className="text-[8px] font-black text-white">{day.tradeCount}</span>
+                    <div className="absolute top-0.5 right-0.5 md:top-1 md:right-1 w-3 h-3 md:w-4 md:h-4 rounded-full bg-cyan-500 flex items-center justify-center">
+                      <span className="text-[7px] md:text-[8px] font-black text-white">{day.tradeCount}</span>
                     </div>
                   )}
 
                   {/* 今日のマーカー */}
                   {isToday && (
-                    <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
+                    <div className="absolute -top-0.5 -right-0.5 md:-top-1 md:-right-1 w-2 h-2 md:w-3 md:h-3 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
                   )}
                 </button>
               );
@@ -1373,11 +1379,11 @@ export default function TradeGamingApp() {
 
         {/* 選択した日のトレード一覧 */}
         {selectedDate && (
-          <Card className="p-6 animate-in slide-in-from-bottom-4 duration-300">
+          <Card className="p-4 md:p-6 animate-in slide-in-from-bottom-4 duration-300">
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <CalendarDays className="w-5 h-5 text-cyan-400" />
-                <h3 className="text-xl font-black text-white">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <CalendarDays className="w-4 h-4 md:w-5 md:h-5 text-cyan-400 flex-shrink-0" />
+                <h3 className="text-base md:text-xl font-black text-white truncate">
                   {(() => {
                     const [, month, day] = selectedDate.split('-').map(Number);
                     return `${month}月${day}日のトレード`;
@@ -1538,26 +1544,27 @@ export default function TradeGamingApp() {
       {/* Mobile Bottom Navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#050b14]/90 backdrop-blur-xl border-t border-slate-800 p-2 z-50">
         <div className="flex justify-around items-center">
-          <button onClick={() => setView('dashboard')} className={`flex flex-col items-center gap-1 py-2 ${view === 'dashboard' ? 'text-cyan-400' : 'text-slate-500'}`}>
+          <button onClick={() => setView('dashboard')} className={`flex flex-col items-center gap-1 py-2 flex-1 ${view === 'dashboard' ? 'text-cyan-400' : 'text-slate-500'}`}>
             <LayoutDashboard size={20} />
             <span className="text-[8px] font-bold">分析</span>
           </button>
           
-          <button onClick={() => setView('calendar')} className={`flex flex-col items-center gap-1 py-2 ${view === 'calendar' ? 'text-cyan-400' : 'text-slate-500'}`}>
+          <button onClick={() => setView('calendar')} className={`flex flex-col items-center gap-1 py-2 flex-1 ${view === 'calendar' ? 'text-cyan-400' : 'text-slate-500'}`}>
             <Calendar size={20} />
             <span className="text-[8px] font-bold">カレンダー</span>
           </button>
           
-          <div className="relative -top-6">
-             <button 
-               onClick={() => setView('add')}
-               className="w-14 h-14 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.6)] border-4 border-[#050b14] text-white"
-             >
-               <Plus size={28} />
-             </button>
-          </div>
+          <button 
+            onClick={() => setView('add')}
+            className={`flex flex-col items-center gap-1 py-2 flex-1 ${view === 'add' ? 'text-cyan-400' : 'text-slate-500'}`}
+          >
+            <div className="w-10 h-10 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.5)]">
+              <Plus size={20} />
+            </div>
+            <span className="text-[8px] font-bold">新規</span>
+          </button>
 
-          <button onClick={() => setView('journal')} className={`flex flex-col items-center gap-1 py-2 ${view === 'journal' ? 'text-cyan-400' : 'text-slate-500'}`}>
+          <button onClick={() => setView('journal')} className={`flex flex-col items-center gap-1 py-2 flex-1 ${view === 'journal' ? 'text-cyan-400' : 'text-slate-500'}`}>
             <History size={20} />
             <span className="text-[8px] font-bold">履歴</span>
           </button>
