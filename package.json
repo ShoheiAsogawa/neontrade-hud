@@ -22,7 +22,7 @@
     "lucide-react": "^0.294.0",
     "@supabase/supabase-js": "^2.38.5",
     "@aws-sdk/client-s3": "^3.490.0",
-    "@aws-sdk/s3-request-presigner": "^3.490.0"
+    "@aws-sdk/s3-request-presigner": "^3.962.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
